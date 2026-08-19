@@ -2,7 +2,8 @@
 """
 Read findings.json (from agentic_dast.py) and open one GitHub issue per finding
 using the `gh` CLI. De-duplicates against existing issues by title so re-runs
-don't spam duplicates.
+don't spam duplicates. Creates the labels it needs first, and degrades
+gracefully (files the issue with no label) if labelling still fails.
 
 Usage:  python scripts/file_issues.py findings.json
 Env:    GH_TOKEN must be set (the workflow provides secrets.GITHUB_TOKEN).
@@ -13,6 +14,27 @@ import subprocess
 import sys
 
 LABEL = "claude-dast"
+
+# Labels we file issues under. `gh issue create` fails if a label does not
+# exist, so we create them up front. name -> hex color.
+LABELS = {
+    "claude-dast": "5319e7",
+    "security": "d73a4a",
+    "severity:critical": "b60205",
+    "severity:high": "d93f0b",
+    "severity:medium": "fbca04",
+    "severity:low": "0e8a16",
+    "severity:info": "c5def5",
+}
+
+
+def ensure_labels():
+    """Create (or update) every label we use. Idempotent thanks to --force."""
+    for name, color in LABELS.items():
+        subprocess.run(
+            ["gh", "label", "create", name, "--color", color, "--force"],
+            capture_output=True, text=True,
+        )
 
 
 def existing_titles():
@@ -25,7 +47,6 @@ def existing_titles():
         ).stdout
         return {item["title"] for item in json.loads(out or "[]")}
     except subprocess.CalledProcessError:
-        # Label may not exist yet on a brand-new repo -> nothing filed yet.
         return set()
 
 
@@ -44,20 +65,18 @@ def build_body(f):
 
 
 def create_issue(title, body, severity):
-    labels = f"{LABEL},security,severity:{severity}"
-    try:
-        subprocess.run(
-            ["gh", "issue", "create", "--title", title, "--body", body,
-             "--label", labels],
-            check=True,
-        )
-    except subprocess.CalledProcessError:
-        # A severity:* label may not exist; retry with just our base label.
-        subprocess.run(
-            ["gh", "issue", "create", "--title", title, "--body", body,
-             "--label", LABEL],
-            check=True,
-        )
+    """Try with full labels, then base label, then no labels at all."""
+    label_sets = [f"{LABEL},security,severity:{severity}", LABEL, None]
+    for labels in label_sets:
+        cmd = ["gh", "issue", "create", "--title", title, "--body", body]
+        if labels:
+            cmd += ["--label", labels]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            return True
+        print(f"  (retry) label set '{labels}' failed: {result.stderr.strip()}")
+    print(f"  ERROR: could not create issue: {title}")
+    return False
 
 
 def main(path):
@@ -65,6 +84,7 @@ def main(path):
         findings = json.load(fh).get("findings", [])
 
     print(f"Agent reported {len(findings)} finding(s).")
+    ensure_labels()
     already = existing_titles()
 
     for f in findings:
@@ -72,9 +92,9 @@ def main(path):
         if title in already:
             print(f"Skipping existing issue: {title}")
             continue
-        create_issue(title, build_body(f), f.get("severity", "info"))
-        already.add(title)
-        print(f"Created issue: {title}")
+        if create_issue(title, build_body(f), f.get("severity", "info")):
+            print(f"Created issue: {title}")
+            already.add(title)
 
 
 if __name__ == "__main__":
