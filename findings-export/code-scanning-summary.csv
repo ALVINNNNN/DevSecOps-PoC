@@ -1,0 +1,140 @@
+﻿"Number","Tool","Severity","RuleId","File","Line","State","Message"
+"36","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/claude-dast.yml","73","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"35","Semgrep OSS",,"yaml.github-actions.security.run-shell-injection.run-shell-injection",".github/workflows/claude-dast.yml","58","open","Using variable interpolation `${{...}}` with `github` context data in a `run:` step could allow an attacker to inject their own code into the runner. This would allow them to steal secrets and code. `github` context data can have arbitrary user input and should be treated as untrusted. Instead, use an intermediate environment variable with `env:` to store the data and use the environment variable in the `run:` script. Be sure to use double-quotes the environment variable, like this: ""$ENVVAR""."
+"34","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/claude-dast.yml","38","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"33","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/claude-dast.yml","35","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"32","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/security-pipeline.yml","107","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"31","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/security-pipeline.yml","30","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"29","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/security-pipeline.yml","85","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"28","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/security-pipeline.yml","71","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"27","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/security-pipeline.yml","57","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"26","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/security-pipeline.yml","43","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"24","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/auto-remediate.yml","53","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"23","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/auto-remediate.yml","35","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"22","Semgrep OSS",,"yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",".github/workflows/auto-remediate.yml","32","open","GitHub Actions step uses a mutable tag or branch reference. Tags and branch names can be silently repointed by the action owner, enabling supply-chain attacks ΓÇö as seen in the trivy-action and kics-github-action compromises. Pin the reference to a full 40-character commit SHA instead, e.g. `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`."
+"21","Trivy","low","CVE-2025-15284","package-lock.json","504","open","Package: qs
+Installed Version: 6.5.1
+Vulnerability CVE-2025-15284
+Severity: MEDIUM
+Fixed Version: 6.14.1
+Link: [CVE-2025-15284](https://avd.aquasec.com/nvd/cve-2025-15284)"
+"20","Trivy","high","CVE-2022-24999","package-lock.json","504","open","Package: qs
+Installed Version: 6.5.1
+Vulnerability CVE-2022-24999
+Severity: HIGH
+Fixed Version: 6.10.3, 6.9.7, 6.8.3, 6.7.3, 6.6.1, 6.5.3, 6.4.1, 6.3.3, 6.2.4
+Link: [CVE-2022-24999](https://avd.aquasec.com/nvd/cve-2022-24999)"
+"19","Trivy","high","CVE-2026-4867","package-lock.json","485","open","Package: path-to-regexp
+Installed Version: 0.1.7
+Vulnerability CVE-2026-4867
+Severity: HIGH
+Fixed Version: 0.1.13
+Link: [CVE-2026-4867](https://avd.aquasec.com/nvd/cve-2026-4867)"
+"18","Trivy","high","CVE-2024-52798","package-lock.json","485","open","Package: path-to-regexp
+Installed Version: 0.1.7
+Vulnerability CVE-2024-52798
+Severity: HIGH
+Fixed Version: 0.1.12
+Link: [CVE-2024-52798](https://avd.aquasec.com/nvd/cve-2024-52798)"
+"17","Trivy","high","CVE-2024-45296","package-lock.json","485","open","Package: path-to-regexp
+Installed Version: 0.1.7
+Vulnerability CVE-2024-45296
+Severity: HIGH
+Fixed Version: 1.9.0, 0.1.10, 8.0.0, 3.3.0, 6.3.0
+Link: [CVE-2024-45296](https://avd.aquasec.com/nvd/cve-2024-45296)"
+"16","Trivy","medium","CVE-2020-7598","package-lock.json","443","open","Package: minimist
+Installed Version: 1.2.0
+Vulnerability CVE-2020-7598
+Severity: MEDIUM
+Fixed Version: 0.2.1, 1.2.3
+Link: [CVE-2020-7598](https://avd.aquasec.com/nvd/cve-2020-7598)"
+"15","Trivy","critical","CVE-2021-44906","package-lock.json","443","open","Package: minimist
+Installed Version: 1.2.0
+Vulnerability CVE-2021-44906
+Severity: CRITICAL
+Fixed Version: 1.2.6, 0.2.4
+Link: [CVE-2021-44906](https://avd.aquasec.com/nvd/cve-2021-44906)"
+"14","Trivy","medium","CVE-2026-2950","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2026-2950
+Severity: MEDIUM
+Fixed Version: 4.18.0
+Link: [CVE-2026-2950](https://avd.aquasec.com/nvd/cve-2026-2950)"
+"13","Trivy","medium","CVE-2025-13465","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2025-13465
+Severity: MEDIUM
+Fixed Version: 4.17.23
+Link: [CVE-2025-13465](https://avd.aquasec.com/nvd/cve-2025-13465)"
+"12","Trivy","medium","CVE-2020-28500","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2020-28500
+Severity: MEDIUM
+Fixed Version: 4.17.21
+Link: [CVE-2020-28500](https://avd.aquasec.com/nvd/cve-2020-28500)"
+"11","Trivy","medium","CVE-2019-1010266","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2019-1010266
+Severity: MEDIUM
+Fixed Version: 4.17.11
+Link: [CVE-2019-1010266](https://avd.aquasec.com/nvd/cve-2019-1010266)"
+"10","Trivy","high","CVE-2026-4800","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2026-4800
+Severity: HIGH
+Fixed Version: 4.18.0
+Link: [CVE-2026-4800](https://avd.aquasec.com/nvd/cve-2026-4800)"
+"9","Trivy","high","CVE-2021-23337","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2021-23337
+Severity: HIGH
+Fixed Version: 4.17.21
+Link: [CVE-2021-23337](https://avd.aquasec.com/nvd/cve-2021-23337)"
+"8","Trivy","high","CVE-2020-8203","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2020-8203
+Severity: HIGH
+Fixed Version: 4.17.19
+Link: [CVE-2020-8203](https://avd.aquasec.com/nvd/cve-2020-8203)"
+"7","Trivy","high","CVE-2018-16487","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2018-16487
+Severity: HIGH
+Fixed Version: >=4.17.11
+Link: [CVE-2018-16487](https://avd.aquasec.com/nvd/cve-2018-16487)"
+"6","Trivy","critical","CVE-2019-10744","package-lock.json","341","open","Package: lodash
+Installed Version: 4.17.4
+Vulnerability CVE-2019-10744
+Severity: CRITICAL
+Fixed Version: 4.17.12
+Link: [CVE-2019-10744](https://avd.aquasec.com/nvd/cve-2019-10744)"
+"5","Trivy","medium","CVE-2022-23541","package-lock.json","293","open","Package: jsonwebtoken
+Installed Version: 8.3.0
+Vulnerability CVE-2022-23541
+Severity: MEDIUM
+Fixed Version: 9.0.0
+Link: [CVE-2022-23541](https://avd.aquasec.com/nvd/cve-2022-23541)"
+"4","Trivy","medium","CVE-2022-23540","package-lock.json","293","open","Package: jsonwebtoken
+Installed Version: 8.3.0
+Vulnerability CVE-2022-23540
+Severity: MEDIUM
+Fixed Version: 9.0.0
+Link: [CVE-2022-23540](https://avd.aquasec.com/nvd/cve-2022-23540)"
+"3","Trivy","high","CVE-2022-23539","package-lock.json","293","open","Package: jsonwebtoken
+Installed Version: 8.3.0
+Vulnerability CVE-2022-23539
+Severity: HIGH
+Fixed Version: 9.0.0
+Link: [CVE-2022-23539](https://avd.aquasec.com/nvd/cve-2022-23539)"
+"2","Trivy","medium","CVE-2024-29041","package-lock.json","168","open","Package: express
+Installed Version: 4.16.0
+Vulnerability CVE-2024-29041
+Severity: MEDIUM
+Fixed Version: 4.19.2, 5.0.0-beta.3
+Link: [CVE-2024-29041](https://avd.aquasec.com/nvd/cve-2024-29041)"
+"1","Trivy","high","CVE-2024-45590","package-lock.json","36","open","Package: body-parser
+Installed Version: 1.18.2
+Vulnerability CVE-2024-45590
+Severity: HIGH
+Fixed Version: 1.20.3
+Link: [CVE-2024-45590](https://avd.aquasec.com/nvd/cve-2024-45590)"
