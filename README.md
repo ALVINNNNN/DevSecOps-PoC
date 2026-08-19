@@ -1,5 +1,5 @@
 # DevSecOps PoC — Beginner's Step-by-Step Guide
-
+ee
 **Goal:** Build a self-hosted pipeline on GitHub that automatically **scans** code for
 security issues (SAST, DAST, SCA), **reviews/triages** them in GitHub's Security tab, and
 **auto-remediates** vulnerable dependencies with a self-merging pull request.
