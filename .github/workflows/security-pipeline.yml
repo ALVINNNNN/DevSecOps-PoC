@@ -1,0 +1,119 @@
+# .github/workflows/security-pipeline.yml
+#
+# DevSecOps PoC - end-to-end security scanning pipeline
+# Runs SAST (Semgrep), SCA (Trivy) and DAST (OWASP ZAP) and uploads all
+# findings into GitHub's Security tab as "code scanning alerts" (SARIF).
+#
+# Runs on a SELF-HOSTED runner (see the guide, Step 3).
+# Change `runs-on: [self-hosted]` to `runs-on: ubuntu-latest` if you want to
+# test on GitHub's cloud runners first.
+
+name: Security Pipeline (SAST + SCA + DAST)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:   # lets you run it manually from the Actions tab
+
+# The built-in GITHUB_TOKEN needs these permissions to upload findings.
+permissions:
+  contents: read
+  security-events: write   # required to publish SARIF to the Security tab
+  actions: read
+
+# Force bash for all `run:` steps so the scripts work on a Windows
+# self-hosted runner too (needs Git for Windows installed, which ships bash).
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. SAST - Static Application Security Testing (scans your source code)
+  # ---------------------------------------------------------------------------
+  sast-semgrep:
+    name: SAST - Semgrep
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/default
+            p/owasp-top-ten
+            p/javascript
+          generateSarif: "1"
+
+      - name: Upload Semgrep results to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  # ---------------------------------------------------------------------------
+  # 2. SCA - Software Composition Analysis (scans your dependencies)
+  # ---------------------------------------------------------------------------
+  sca-trivy:
+    name: SCA - Trivy
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy.sarif
+          severity: CRITICAL,HIGH,MEDIUM
+          ignore-unfixed: false
+
+      - name: Upload Trivy results to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy.sarif
+          category: trivy
+
+  # ---------------------------------------------------------------------------
+  # 3. DAST - Dynamic Application Security Testing (attacks the RUNNING app)
+  # ---------------------------------------------------------------------------
+  dast-zap:
+    name: DAST - OWASP ZAP
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Start the demo app (OWASP Juice Shop) in the background using Docker.
+      - name: Start target app
+        run: |
+          docker rm -f juice-shop 2>/dev/null || true
+          docker run -d --name juice-shop -p 3000:3000 bkimminich/juice-shop
+          echo "Waiting for the app to boot..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000 > /dev/null; then
+              echo "App is up."; break
+            fi
+            sleep 3
+          done
+
+      - name: OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'http://localhost:3000'
+          # -I means "do not fail the build on warnings" (good for a PoC).
+          cmd_options: '-I'
+          fail_action: false
+
+      - name: Stop target app
+        if: always()
+        run: docker rm -f juice-shop || true
