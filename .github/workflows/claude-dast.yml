@@ -1,0 +1,80 @@
+# .github/workflows/claude-dast.yml
+#
+# Claude-powered AGENTIC DAST.
+# Claude actively probes the running app (via an HTTP tool it drives), records
+# findings, and this workflow opens ONE GitHub issue per finding.
+#
+# Requires a repo secret: ANTHROPIC_API_KEY
+#   Repo -> Settings -> Secrets and variables -> Actions -> New repository secret
+#
+# Runs manually (or weekly). It costs API tokens each run, so it is NOT wired to
+# every push on purpose.
+
+name: Claude Agentic DAST
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_steps:
+        description: "Tool-call budget for the agent (higher = deeper + pricier)"
+        required: false
+        default: "40"
+  schedule:
+    - cron: '0 4 * * 1'      # every Monday 04:00 UTC
+
+permissions:
+  contents: read
+  issues: write             # to open one issue per finding
+
+jobs:
+  claude-dast:
+    name: Claude Agentic DAST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install scanner dependencies
+        run: pip install anthropic requests
+
+      - name: Start target app (OWASP Juice Shop)
+        run: |
+          docker run -d --name juice-shop -p 3000:3000 bkimminich/juice-shop
+          echo "Waiting for the app to boot..."
+          for i in $(seq 1 40); do
+            if curl -sf http://localhost:3000 > /dev/null; then echo "App is up."; break; fi
+            sleep 3
+          done
+
+      - name: Run Claude agentic DAST
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_MODEL: claude-sonnet-5
+        run: |
+          python scripts/agentic_dast.py \
+            --target http://localhost:3000 \
+            --max-steps "${{ github.event.inputs.max_steps || '40' }}" \
+            --out findings.json
+          echo "----- findings.json -----"
+          cat findings.json
+
+      - name: Open a GitHub issue per finding
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/file_issues.py findings.json
+
+      - name: Upload raw findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-dast-findings
+          path: findings.json
+
+      - name: Stop target app
+        if: always()
+        run: docker rm -f juice-shop || true
