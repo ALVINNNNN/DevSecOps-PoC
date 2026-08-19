@@ -1,39 +1,32 @@
 # .github/workflows/auto-remediate.yml
 #
 # DevSecOps PoC - automatic remediation of vulnerable DEPENDENCIES.
+# Runs on GitHub's free cloud Linux runners (ubuntu-latest).
 #
-# What it does:
-#   1. Runs `npm audit fix` to bump vulnerable packages to safe versions.
-#   2. If anything changed, opens a Pull Request with the fix.
-#   3. (PoC only) Enables auto-merge so the PR merges itself once checks pass.
+#   1. `npm audit fix` bumps vulnerable packages to safe versions.
+#   2. If anything changed, open a Pull Request with the fix.
+#   3. (PoC only) merge that PR automatically.
 #
-# !!! SAFETY WARNING - READ THIS !!!
-# Auto-merge means fixes land in `main` with NO human review. That is fine for
-# a throwaway PoC repo, but NEVER enable this on a real/production repository.
-# Auto-remediation only works reliably for SCA (dependency) fixes - SAST/DAST
-# code-logic fixes still need a human. See the guide, Step 7.
+# !!! SAFETY WARNING !!!
+# Auto-merge lands changes in `main` with NO human review. Fine for a throwaway
+# PoC repo; NEVER do this on real code. Delete the final "Merge" step to keep a
+# human in the loop. Auto-remediation only works for dependency (SCA) fixes.
 
 name: Auto-Remediate Dependencies
 
 on:
   schedule:
     - cron: '0 3 * * 1'      # every Monday 03:00 UTC
-  workflow_dispatch:          # or run it on demand from the Actions tab
+  workflow_dispatch:          # or run on demand from the Actions tab
 
 permissions:
   contents: write            # to commit the fix
-  pull-requests: write       # to open + auto-merge the PR
-
-# Force bash so the scripts run on a Windows self-hosted runner
-# (requires Git for Windows, which provides bash).
-defaults:
-  run:
-    shell: bash
+  pull-requests: write       # to open + merge the PR
 
 jobs:
   auto-fix:
     name: Fix vulnerable dependencies
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,7 +39,7 @@ jobs:
       - name: Attempt automatic dependency fixes
         id: fix
         run: |
-          npm audit fix || true          # never hard-fail the PoC
+          npm audit fix || true
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
@@ -64,16 +57,14 @@ jobs:
           delete-branch: true
           title: "Automated dependency security fixes"
           body: |
-            This PR was opened automatically by the DevSecOps PoC pipeline.
-            It bumps vulnerable dependencies found by `npm audit`.
-
+            Opened automatically by the DevSecOps PoC pipeline.
+            Bumps vulnerable dependencies found by `npm audit`.
             Review the diff before relying on it in a real project.
           labels: security, automated
 
-      # PoC-only: merge the PR without human review once checks pass.
-      # Delete this whole step to keep a human in the loop (recommended).
-      - name: Enable auto-merge (PoC only)
+      # PoC-only: merge immediately. Delete this step to require human review.
+      - name: Merge the PR (PoC only)
         if: steps.cpr.outputs.pull-request-number != ''
-        run: gh pr merge --auto --squash "${{ steps.cpr.outputs.pull-request-number }}"
+        run: gh pr merge "${{ steps.cpr.outputs.pull-request-number }}" --squash --delete-branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
