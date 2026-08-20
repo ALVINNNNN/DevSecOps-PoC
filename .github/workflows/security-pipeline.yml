@@ -93,14 +93,41 @@ jobs:
             sleep 3
           done
 
-      - name: OWASP ZAP baseline scan
+      # Register a test account (fresh container has none) and log in to get a
+      # JWT. If anything fails we fall back to an unauthenticated scan.
+      - name: Authenticate to app (register + login)
+        run: |
+          curl -s -X POST http://localhost:3000/api/Users \
+            -H "Content-Type: application/json" \
+            -d '{"email":"test@email.com","password":"testtest","passwordRepeat":"testtest"}' \
+            > /dev/null || true
+          TOKEN=$(curl -s -X POST http://localhost:3000/rest/user/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"test@email.com","password":"testtest"}' \
+            | python3 -c "import sys,json; print(json.load(sys.stdin).get('authentication',{}).get('token',''))" 2>/dev/null || true)
+          if [ -n "$TOKEN" ]; then
+            echo "Authenticated: got JWT (${#TOKEN} chars)."
+          else
+            echo "WARNING: no token - scan will run unauthenticated."
+          fi
+          echo "ZAP_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      # Authenticated scan: ZAP injects "Authorization: Bearer <token>" on every
+      # request via the replacer add-on, so it can reach logged-in pages.
+      - name: OWASP ZAP authenticated baseline scan
         run: |
           mkdir -p zap-out && chmod 777 zap-out
           docker run --rm --network host \
             -v ${{ github.workspace }}/zap-out:/zap/wrk/:rw \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py -t http://localhost:3000 -I \
-            -r zap-report.html -w zap-report.md -J zap-report.json || true
+            -r zap-report.html -w zap-report.md -J zap-report.json \
+            -z "replacer.full_list(0).description=auth \
+                replacer.full_list(0).enabled=true \
+                replacer.full_list(0).matchtype=REQ_HEADER \
+                replacer.full_list(0).matchstr=Authorization \
+                replacer.full_list(0).regex=false \
+                replacer.full_list(0).replacement=Bearer ${ZAP_TOKEN}" || true
 
       - name: Upload ZAP report (download from run Artifacts)
         if: always()
