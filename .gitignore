@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Self-hosted runner (not part of the repo)
+actions-runner/
+
+# Scan outputs / downloaded reports (regenerable)
+findings-export/
+zap-report.*
+zap.yaml
+*.sarif
+code-scanning-alerts.json
+findings.json
+
+# Skill package artifact
+*.skill
