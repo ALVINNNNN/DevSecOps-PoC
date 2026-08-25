@@ -1,11 +1,11 @@
-﻿{
+{
   "name": "devsecops-poc-demo",
   "version": "1.0.0",
   "description": "Deliberately outdated deps for scanning practice",
   "dependencies": {
-    "lodash": "4.17.4",
-    "express": "4.16.0",
-    "minimist": "1.2.0",
-    "jsonwebtoken": "8.3.0"
+    "express": "^4.22.2",
+    "jsonwebtoken": "^9.0.3",
+    "lodash": "^4.18.1",
+    "minimist": "^1.2.8"
   }
 }
