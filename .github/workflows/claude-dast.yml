@@ -7,8 +7,8 @@
 # Requires a repo secret: ANTHROPIC_API_KEY
 #   Repo -> Settings -> Secrets and variables -> Actions -> New repository secret
 #
-# Runs manually (or weekly). It costs API tokens each run, so it is NOT wired to
-# every push on purpose.
+# Manual-only for now (weekly schedule disabled). Re-enable the schedule block
+# below once Claude API credits are topped up.
 
 name: Claude Agentic DAST
 
@@ -19,8 +19,8 @@ on:
         description: "Tool-call budget for the agent (higher = deeper + pricier)"
         required: false
         default: "40"
-  schedule:
-    - cron: '0 4 * * 1'      # every Monday 04:00 UTC
+  # schedule:
+  #   - cron: '0 4 * * 1'      # every Monday 04:00 UTC — disabled: out of API credits
 
 permissions:
   contents: read
